@@ -1,7 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import type { WeeklyMenu, Meal } from "@/lib/scraper";
+
+const CACHE_KEY = "fitkitchen_menu";
+
+function currentMondayStr(): string {
+  const today = new Date();
+  const monday = new Date(today);
+  monday.setDate(today.getDate() - today.getDay() + (today.getDay() === 0 ? -6 : 1));
+  return monday.toISOString().split("T")[0];
+}
 
 const DAYS_ORDER = [0, 1, 2, 3, 4, 5];
 
@@ -67,8 +76,9 @@ export default function Home() {
   const [menu, setMenu] = useState<WeeklyMenu | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fromCache, setFromCache] = useState(false);
 
-  const load = async () => {
+  const load = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -77,14 +87,32 @@ export default function Home() {
         const j = await res.json().catch(() => ({}));
         setError(j.error ?? "Ошибка загрузки");
       } else {
-        setMenu(await res.json());
+        const data: WeeklyMenu = await res.json();
+        localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+        setMenu(data);
+        setFromCache(false);
       }
     } catch {
       setError("Сетевая ошибка");
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    const raw = localStorage.getItem(CACHE_KEY);
+    if (raw) {
+      try {
+        const cached: WeeklyMenu = JSON.parse(raw);
+        if (cached.weekStart === currentMondayStr()) {
+          setMenu(cached);
+          setFromCache(true);
+          return;
+        }
+      } catch {}
+    }
+    load();
+  }, [load]);
 
   const byDay = menu ? groupByDay(menu.meals) : {};
 
@@ -107,16 +135,17 @@ export default function Home() {
             fontSize: 14,
           }}
         >
-          {loading ? "Загружаю…" : menu ? "🔄 Обновить" : "Загрузить меню"}
+          {loading ? "Загружаю…" : "🔄 Обновить"}
         </button>
 
         {menu && (
-          <CopyButton text={fullMenuText(menu)} label="📋 Скопировать всё меню" />
+          <CopyButton text={fullMenuText(menu)} label="Скопировать всё меню" />
         )}
 
         {menu && (
           <span style={{ fontSize: 12, color: "#999" }}>
             неделя с {menu.weekStart}
+            {fromCache && <span style={{ marginLeft: 6, color: "#bbb" }}>· кэш</span>}
           </span>
         )}
       </div>
