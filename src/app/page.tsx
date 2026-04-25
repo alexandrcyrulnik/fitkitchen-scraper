@@ -59,16 +59,20 @@ function CopyButton({ text, label }: { text: string; label: string }) {
 
 function btnStyle(active: boolean): React.CSSProperties {
   return {
-    padding: "4px 6px",
+    width: 28,
+    height: 28,
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
     fontSize: 14,
     borderRadius: 6,
     border: "1px solid #ddd",
     cursor: "pointer",
     background: active ? "#d4edda" : "transparent",
     color: active ? "#155724" : "inherit",
-    transition: "all 0.2s",
-    lineHeight: 1,
+    transition: "background 0.2s, color 0.2s",
     flexShrink: 0,
+    padding: 0,
   };
 }
 
