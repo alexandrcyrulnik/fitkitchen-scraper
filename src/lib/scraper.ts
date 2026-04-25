@@ -1,4 +1,5 @@
 import * as cheerio from "cheerio";
+import type { Element } from "domhandler";
 
 const MENU_URL = "https://fitkitchen.cz/fitness-menu";
 const FIT_CATEGORY_ID = "2";
@@ -113,7 +114,7 @@ function extractFirstFloat(patterns: RegExp[], text: string): number | null {
 
 function parseMealItem(
   $: cheerio.CheerioAPI,
-  item: cheerio.Element,
+  item: Element,
   dayIdx: number,
   mealIdx: number
 ): Meal | null {
