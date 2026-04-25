@@ -171,7 +171,7 @@ function parseMealItem(
 function parseMenu(html: string): Meal[] {
   const $ = cheerio.load(html);
   const weeks = $(".fit-menu-week__wrapper");
-  const target = weeks.length ? weeks.first() : $.root();
+  const target = weeks.length ? weeks.first() : $("body");
 
   const meals: Meal[] = [];
   target.find(".fit-menu-day__wrapper").each((dayIdx, dayEl) => {
