@@ -15,7 +15,7 @@ function groupByDay(meals: Meal[]): Record<number, Meal[]> {
 function mealText(meal: Meal): string {
   const macros =
     meal.proteinG !== null && meal.carbsG !== null && meal.fatG !== null
-      ? ` (Б:${meal.proteinG}г У:${meal.carbsG}г Ж:${meal.fatG}г)`
+      ? ` (🥩Б:${meal.proteinG}г 🍞У:${meal.carbsG}г 🧈Ж:${meal.fatG}г)`
       : "";
   return `${meal.name} — ${meal.calories} ккал${macros}`;
 }
@@ -42,22 +42,24 @@ function CopyButton({ text, label }: { text: string; label: string }) {
     setTimeout(() => setCopied(false), 1500);
   };
   return (
-    <button onClick={copy} style={btnStyle(copied)}>
-      {copied ? "✓ скопировано" : label}
+    <button onClick={copy} title={label} style={btnStyle(copied)}>
+      {copied ? "✓" : "📋"}
     </button>
   );
 }
 
 function btnStyle(active: boolean): React.CSSProperties {
   return {
-    padding: "4px 10px",
-    fontSize: 12,
+    padding: "4px 6px",
+    fontSize: 14,
     borderRadius: 6,
-    border: "1px solid #ccc",
+    border: "1px solid #ddd",
     cursor: "pointer",
-    background: active ? "#d4edda" : "#f8f9fa",
-    color: active ? "#155724" : "#333",
+    background: active ? "#d4edda" : "transparent",
+    color: active ? "#155724" : "inherit",
     transition: "all 0.2s",
+    lineHeight: 1,
+    flexShrink: 0,
   };
 }
 
@@ -172,7 +174,7 @@ export default function Home() {
                         🔥 {meal.calories} ккал
                         {meal.proteinG !== null && (
                           <span style={{ marginLeft: 6 }}>
-                            · Б:{meal.proteinG}г У:{meal.carbsG}г Ж:{meal.fatG}г
+                            · 🥩Б:{meal.proteinG}г 🍞У:{meal.carbsG}г 🧈Ж:{meal.fatG}г
                           </span>
                         )}
                       </div>
