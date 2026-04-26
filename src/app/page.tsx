@@ -5,13 +5,6 @@ import type { WeeklyMenu, Meal } from "@/lib/scraper";
 
 const CACHE_KEY = "fitkitchen_menu";
 
-function currentMondayStr(): string {
-  const today = new Date();
-  const monday = new Date(today);
-  monday.setDate(today.getDate() - today.getDay() + (today.getDay() === 0 ? -6 : 1));
-  return monday.toISOString().split("T")[0];
-}
-
 const DAYS_ORDER = [0, 1, 2, 3, 4, 5];
 
 function groupByDay(meals: Meal[]): Record<number, Meal[]> {
@@ -107,12 +100,9 @@ export default function Home() {
     const raw = localStorage.getItem(CACHE_KEY);
     if (raw) {
       try {
-        const cached: WeeklyMenu = JSON.parse(raw);
-        if (cached.weekStart === currentMondayStr()) {
-          setMenu(cached);
-          setFromCache(true);
-          return;
-        }
+        setMenu(JSON.parse(raw));
+        setFromCache(true);
+        return;
       } catch {}
     }
     load();
